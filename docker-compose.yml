@@ -1,0 +1,49 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/app
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: symfonydb
+      MYSQL_USER: symfonyuser
+      MYSQL_PASSWORD: secretpassword
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
